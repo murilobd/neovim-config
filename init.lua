@@ -2,8 +2,8 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
+    local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
       { out, "WarningMsg" },
@@ -30,7 +30,7 @@ require("lazy").setup({
 
 -- neo-tree
 vim.keymap.set('n', '\\', ':Neotree filesystem right toggle focus<CR>', { desc = 'Reveal neo-tree on right side' })
-vim.keymap.set('n', '<leader>gs', ':Neotree git_status right toggle focus<CR>', { desc = 'Reveal neo-tree git status on right side' })
+-- vim.keymap.set('n', '<leader>gs', ':Neotree git_status right toggle focus<CR>', { desc = 'Reveal neo-tree git status on right side' })
 
 
 -- shortcuts to move line/selection up and down using command + up/down arrow

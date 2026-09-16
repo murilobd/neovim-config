@@ -42,8 +42,34 @@ return {
 		"mason-org/mason-lspconfig.nvim",
 		opts = {
 			-- Installs your language servers automatically
-			ensure_installed = { "lua_ls", "ts_ls" },
+			ensure_installed = { "astro", "lua_ls", "ts_ls" },
 		},
+		config = function(_, opts)
+			require("mason-lspconfig").setup(opts)
+
+			-- Astro's Mason package currently bundles TypeScript 7, which no longer
+			-- ships the JavaScript SDK files required by astro-language-server.
+			-- Prefer a compatible workspace SDK and fall back to the TypeScript SDK
+			-- bundled with Mason's typescript-language-server package.
+			local typescript = require("mason-lspconfig.typescript")
+			local ts_install_dir = vim.fs.joinpath(
+				vim.fn.stdpath("data"),
+				"mason",
+				"packages",
+				"typescript-language-server"
+			)
+
+			vim.lsp.config("astro", {
+				before_init = function(_, config)
+					local tsdk, tsserver = typescript.resolve_tsdk(ts_install_dir, config.root_dir)
+
+					config.init_options = config.init_options or {}
+					config.init_options.typescript = config.init_options.typescript or {}
+					config.init_options.typescript.tsdk = tsdk
+					config.init_options.typescript.serverPath = tsserver
+				end,
+			})
+		end,
 		dependencies = {
 			-- Ensures mason and lspconfig are ready in runtimepath first
 			{ "mason-org/mason.nvim", opts = {} },
